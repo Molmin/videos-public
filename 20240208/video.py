@@ -64,10 +64,11 @@ class S02DescribeProblem(Scene):
         convert_problem.arrange(DOWN, buff=LARGE_BUFF)
         self.play(FadeIn(convert_problem[0], DOWN))
         self.play(Write(convert_problem[1]))
+        self.wait()
 
 class S04ReadCode(Scene):
     def construct(self):
-        image = ImageMobject('./S04ReadCode.png')
+        image = ImageMobject('./S04-code.png')
         image.scale(1.4)
         self.play(FadeIn(image))
         note1 = Tex("\\texttt{result[i][j]} \\to (k,i-k,j)")
@@ -98,7 +99,7 @@ def isWinStatusWithSameNumbers(n: int):
 
 def isWinStatus(x: int, y: int):
     if x != 0 and y != x:
-        return False
+        return True
     else:
         return isWinStatusWithSameNumbers(y)
 
@@ -140,7 +141,7 @@ class S06AnalysisResult(Scene):
         )
         lines.arrange(DOWN, buff=MED_LARGE_BUFF)
         self.play(Write(lines[0]), Write(lines[1]))
-        self.wait(2)
+        self.wait(5)
         self.play(lines.animate.shift(LEFT * 3))
         notes = VGroup(
             Tex("\\Leftrightarrow"),
@@ -154,3 +155,129 @@ class S06AnalysisResult(Scene):
         self.play(TransformMatchingTex(lines[1].copy(), notes[1]))
         self.wait(0.3)
         self.play(TransformMatchingTex(notes[1].copy(), notes[3]), FadeIn(notes[2], RIGHT))
+        self.wait()
+
+class S07GuessConclusions(Scene):
+    def construct(self):
+        winningstates1 = VGroup(
+            Tex("2"), Tex("6"), Tex("8"),
+            Tex("10"), Tex("14"), Tex("18"),
+        )
+        winningstates2 = VGroup(
+            Tex("22"), Tex("24"), Tex("26"),
+            Tex("30"), Tex("32"), Tex("34"),
+        )
+        expressions1 = VGroup(
+            Tex("2^1", color=YELLOW), Tex("2^1\\times 3", color=YELLOW), Tex("2^3", color=YELLOW),
+            Tex("2^1\\times 5", color=YELLOW), Tex("2^1\\times 7", color=YELLOW), Tex("2^1\\times 9", color=YELLOW),
+        )
+        expressions2 = VGroup(
+            Tex("2^1\\times 11", color=YELLOW), Tex("2^3\\times 8", color=YELLOW), Tex("2^1\\times 13", color=YELLOW),
+            Tex("2^1\\times 15", color=YELLOW), Tex("2^5", color=YELLOW), Tex("2^1\\times 17", color=YELLOW),
+        )
+        winningstates1.arrange(RIGHT, buff=LARGE_BUFF * 2)
+        winningstates2.arrange(RIGHT, buff=LARGE_BUFF * 2)
+        lines = VGroup(winningstates1, winningstates2)
+        lines.arrange(DOWN, buff=LARGE_BUFF * 2.5)
+        lines.move_to(UP * 0.5)
+        self.play(*(Write(x) for x in winningstates1))
+        self.play(*(Write(x) for x in winningstates2))
+        self.wait(2)
+        for i in range(0, 6):
+            expressions1[i].next_to(winningstates1[i], DOWN, buff=MED_LARGE_BUFF)
+            self.play(TransformMatchingTex(winningstates1[i].copy(), expressions1[i]), run_time=0.25)
+        for i in range(0, 6):
+            expressions2[i].next_to(winningstates2[i], DOWN, buff=MED_LARGE_BUFF)
+            self.play(TransformMatchingTex(winningstates2[i].copy(), expressions2[i]), run_time=0.25)
+        self.play(*(FadeOut(group, UP) for group in [lines, expressions1, expressions2]))
+
+        answer = Tex("2^{2p+1}\\cdot(2k+1)")
+        self.play(Write(answer))
+        self.wait(2)
+        self.play(Uncreate(answer))
+
+class S08ProofSameNumbersSituation(Scene):
+    def construct(self):
+        origin = Tex("(0,0,n) \\to (n,k,n-k)")
+        origin.move_to(LEFT * 2)
+        new1 = Tex("k < n-k")
+        new2 = Tex("n = 2k")
+        new1.next_to(origin, RIGHT * 1.5 + UP * 0.8, buff=LARGE_BUFF)
+        new2.next_to(origin, RIGHT * 1.5 + DOWN * 0.8, buff=LARGE_BUFF)
+        self.play(Write(origin))
+        arrow1 = Arrow(RIGHT * 0.8, RIGHT * 2 + UP)
+        arrow2 = Arrow(RIGHT * 0.8, RIGHT * 2 + DOWN)
+        self.play(Write(new1), GrowArrow(arrow1))
+        self.play(Write(new2), GrowArrow(arrow2))
+        self.wait()
+        self.play(*(FadeOut(x) for x in [origin, new1, arrow1, new2, arrow2]))
+        l = Tex("(0,0,n)\\to(0,\\dfrac 12n,\\dfrac 12n)")
+        r = Tex("\\Leftrightarrow(0,0,\\dfrac 12n)")
+        group = VGroup(l, r)
+        group.arrange(RIGHT, buff=SMALL_BUFF)
+        self.play(Write(l))
+        self.wait()
+        self.play(Write(r))
+        self.wait()
+        d = Tex("\\left(0,0,2^{2p}\\cdot(2k+1)\\right)\\to\\left(0,0,2^p\\cdot(2k+1)\\right)", color=YELLOW)
+        d.next_to(group, DOWN, buff=MED_LARGE_BUFF)
+        self.play(Write(d))
+        self.wait()
+
+class S09ProofDifferentNumbersSituation(Scene):
+    def construct(self):
+        state1 = Tex("(0,x,y)")
+        state2 = Tex("(x,x,y-x)")
+        state3 = Tex("(x,x+k,y-x-k)")
+        group = VGroup(state1, Tex("\\to"), state2, Tex("\\to"), state3)
+        group.arrange(RIGHT, buff=MED_LARGE_BUFF)
+        group.move_to(UP * 0.7)
+        state1_note = TexText("defeat state", color=RED, font_size=40)
+        state1_note.next_to(state1, DOWN, buff=MED_SMALL_BUFF)
+        state1_note2 = TexText("winning state", color=GREEN, font_size=40)
+        state1_note2.next_to(state1_note, DOWN, buff=MED_SMALL_BUFF)
+        state1_range = Tex("0 < x < y, x < y-x", font_size=36)
+        state1_range.next_to(state1, UP, buff=MED_SMALL_BUFF)
+        state2_note = TexText("winning state", color=GREEN, font_size=40)
+        state2_note.next_to(state2, DOWN, buff=MED_SMALL_BUFF)
+        state3_note = TexText("defeat state", color=RED, font_size=40)
+        state3_note.next_to(state3, DOWN, buff=MED_SMALL_BUFF)
+        self.play(Write(state1))
+        self.wait(2)
+        self.play(Write(state1_note))
+        self.play(Write(state1_range))
+        self.wait(2)
+        self.play(Write(state2), FadeIn(group[1], RIGHT))
+        self.play(Write(state2_note))
+        self.wait(2)
+        self.play(Write(state3), FadeIn(group[3], RIGHT))
+        self.play(Write(state3_note))
+        self.wait(2)
+        self.play(GrowArrow(Arrow(state1_note, state3_note, path_arc=1)))
+        self.wait()
+        self.play(ShowCreation(Cross(state1_note)))
+        self.play(Write(state1_note2))
+        self.wait(2)
+
+class S10ShowConclusions(Scene):
+    def construct(self):
+        title = TexText("The 7th Romanian Master of Mathematics Competition Problem 2", font_size=42)
+        title.move_to(UP * 3.5)
+        image = ImageMobject('./S10-origin-problem.png')
+        image.move_to(UP * 0.9)
+        self.play(FadeIn(image, UP), Write(title))
+        columns = VGroup(
+            Tex("(0,0,n-3)"),
+            Tex("n-3=2^{2p+1}\\cdot(2k+1)"),
+            TexText("otherwise"),
+        )
+        note1 = TexText("winning state", color=GREEN, font_size=40)
+        note2 = TexText("defeat state", color=RED, font_size=40)
+        note1.next_to(columns[1], DOWN, buff=MED_SMALL_BUFF)
+        note2.next_to(columns[2], DOWN, buff=MED_SMALL_BUFF)
+        self.wait()
+        self.play(Write(columns[0]))
+        self.wait()
+        self.play(Write(columns[1]), Write(note1))
+        self.play(Write(columns[2]), Write(note2))
+        self.wait()
