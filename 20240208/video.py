@@ -3,7 +3,6 @@ import numpy as np
 
 class S01ShowProblem(Scene):
     def construct(self):
-        # Gym 104639 (The 2023 ICPC Asia EC Regionals Online Contest (I)) Problem F
         problem_description_words = TexText("""
             Alice 和 Bob 正在玩游戏。\\\\
             游戏中有三个整数 $a_1,a_2,a_3$。Alice 和 Bob 轮流操作，\\\\
@@ -271,6 +270,8 @@ class S10ShowConclusions(Scene):
             Tex("n-3=2^{2p+1}\\cdot(2k+1)"),
             TexText("otherwise"),
         )
+        columns.arrange(RIGHT, buff=LARGE_BUFF)
+        columns.move_to(DOWN * 2)
         note1 = TexText("winning state", color=GREEN, font_size=40)
         note2 = TexText("defeat state", color=RED, font_size=40)
         note1.next_to(columns[1], DOWN, buff=MED_SMALL_BUFF)
@@ -280,4 +281,61 @@ class S10ShowConclusions(Scene):
         self.wait()
         self.play(Write(columns[1]), Write(note1))
         self.play(Write(columns[2]), Write(note2))
+        self.wait()
+
+class S11ShowGymProblem(Scene):
+    def construct(self):
+        title = TexText("The 2023 ICPC Asia EC Regionals Online Contest (I) Problem F", font_size=36)
+        title.move_to(UP * 3.5)
+        image = ImageMobject("./S11-gym-problem.png")
+        image.scale(1.35)
+        image.move_to(UP * 0.5)
+        self.play(FadeIn(image, UP), Write(title))
+        arr = VGroup(
+            Tex("a_1"), Tex("a_2"), Tex("a_3"), Tex("a_4"),
+            Tex("a_5"), Tex("a_6"), Tex("a_7"), Tex("\cdots"),
+        )
+        arr.arrange(RIGHT, buff=MED_LARGE_BUFF)
+        arr.move_to(DOWN * 2.8)
+        self.wait()
+        self.play(*(Write(tex) for tex in arr))
+        self.wait(2)
+        self.play(ShowCreation(SurroundingRectangle(arr[1])), run_time=1/3)
+        self.play(ShowCreation(SurroundingRectangle(arr[3])), run_time=1/3)
+        self.play(ShowCreation(SurroundingRectangle(arr[6])), run_time=1/3)
+        self.wait()
+        note = TexText("calculate total of winning states", color=BLUE, font_size=40)
+        note.next_to(arr, DOWN, buff=MED_SMALL_BUFF)
+        self.play(Write(note))
+        self.wait()
+
+class S12InclusionExclusion(Scene):
+    def construct(self):
+        title = TexText("Inclusion-Exclusion Principle")
+        type1 = TexText("$S=$ total number of situations", font_size=40)
+        type2 = TexText("$S_1=$ total number of all 3 numbers are the same", font_size=40)
+        type3 = TexText("""
+            $S_2=$ total number of only 2 numbers are the same\\\\
+            and must be defeated
+        """, font_size=40)
+        difficulty1 = TexText("SUPER simple!", color=GREEN)
+        difficulty2 = TexText("VERY simple!", color=YELLOW)
+        difficulty3 = TexText("a little difficult ...", color=RED)
+        lines = VGroup(title, type1, type2, type3, difficulty3)
+        lines.arrange(DOWN, buff=MED_LARGE_BUFF)
+        lines.move_to(LEFT * 1.5 + UP * 0.4)
+        answer1 = Tex("=\\dbinom n3")
+        answer1.next_to(type1, RIGHT, buff=MED_SMALL_BUFF)
+        difficulty1.next_to(answer1, RIGHT, buff=MED_LARGE_BUFF)
+        difficulty2.next_to(type2, RIGHT, buff=MED_LARGE_BUFF)
+        difficulty3.next_to(type3, RIGHT + DOWN, buff=-MED_SMALL_BUFF)
+        self.play(Write(title))
+        self.wait()
+        for target in [type1, answer1, difficulty1, type2, difficulty2, type3, difficulty3]:
+            self.play(Write(target))
+            self.wait()
+        answer = TexText("answer $=S-S_1-S_2$", color=PURPLE_B)
+        answer.move_to(DOWN * 2.2)
+        self.wait()
+        self.play(Write(answer))
         self.wait()
