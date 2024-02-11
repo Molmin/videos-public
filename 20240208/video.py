@@ -3,18 +3,21 @@ import numpy as np
 
 class S01ShowProblem(Scene):
     def construct(self):
-        problem_description_words = TexText("""
-            Alice 和 Bob 正在玩游戏。\\\\
-            游戏中有三个整数 $a_1,a_2,a_3$。Alice 和 Bob 轮流操作，\\\\
-            Alice 先手。\\\\
-            每次操作可以选择两个互不相同的整数 $a_i,a_j$ 改变它们的值。\\\\
-            设更改后的值为 $a_i'$ 和 $a_j'$，满足 $a_i+a_j=a_i'+a_j'$ \\\\
-            且 $|a_i'-a_j'| < |a_i-a_j|$ 时操作才是合法的。\\\\
-            不能进行合法操作者输。问谁有必胜策略？
-        """, alignment="")
-        problem_description_words.to_corner(LEFT)
-        self.play(Write(problem_description_words), run_time=10)
-        self.wait(2)
+        problem_description_words = VGroup(
+            TexText("Alice 和 Bob 正在玩游戏。"),
+            TexText("游戏中有三个整数 $a_1,a_2,a_3$。Alice 和 Bob 轮流操作，"),
+            TexText("Alice 先手。"),
+            TexText("每次操作可以选择两个互不相同的整数 $a_i,a_j$ 改变它们的值。"),
+            TexText("设更改后的值为 $a_i'$ 和 $a_j'$，满足 $a_i+a_j=a_i'+a_j'$"),
+            TexText("且 $|a_i'-a_j'| < |a_i-a_j|$ 时操作才是合法的。"),
+            TexText("不能进行合法操作者输。问谁有必胜策略？"),
+        )
+        problem_description_words.arrange(DOWN, buff=MED_SMALL_BUFF)
+        for i in range(0, 7):
+            problem_description_words[i].to_corner(LEFT)
+            self.play(Write(problem_description_words[i]), run_time=2)
+            if i != 1 and i != 4:
+                self.wait(6)
 
 class S02DescribeProblem(Scene):
     def construct(self):
@@ -48,7 +51,7 @@ class S02DescribeProblem(Scene):
             TransformMatchingTex(l_lines[0].copy(), l_lines[2]),
             run_time=2,
         )
-        self.wait()
+        self.wait(4)
         self.play(FadeIn(columns[1], RIGHT))
         self.play(
             TransformMatchingTex(l_lines[0].copy(), r_lines[0]),
@@ -63,14 +66,14 @@ class S02DescribeProblem(Scene):
         convert_problem.arrange(DOWN, buff=LARGE_BUFF)
         self.play(FadeIn(convert_problem[0], DOWN))
         self.play(Write(convert_problem[1]))
-        self.wait()
+        self.wait(4)
 
 class S04ReadCode(Scene):
     def construct(self):
         image = ImageMobject('./S04-code.png')
         image.scale(1.4)
         self.play(FadeIn(image))
-        note1 = Tex("\\texttt{result[i][j]} \\to (k,i-k,j)")
+        note1 = Tex("\\texttt{result[i][j]} \\to (0,i,j)")
         note1.move_to(UP * 3.2)
         note2 = Tex("(0,i,j) \\to (k,i-k,j) \\Leftrightarrow (0,i-2k,j-k)", font_size=40)
         note2.move_to(UP * 2 + RIGHT * 3)
