@@ -124,12 +124,16 @@ class S05ReadBruteForceResult(Scene):
                 for j in range(i, n + 1)
             ), run_time=0.1)
         arrow1 = Arrow(LEFT * 5 + UP * 2.5, LEFT * 3.6 + UP * 3.9)
+        self.wait()
         self.play(GrowArrow(arrow1), run_time=0.3)
+        self.wait(2)
         note1 = TexText("$(0,0,0)$ is not a winning state", font_size=30)
         note1.move_to(LEFT * 5 + UP * 2.35)
         self.play(Write(note1))
+        self.wait(3)
         arrow2 = Arrow(LEFT * 3.2 + UP * 0.7, LEFT * 1.8 + UP * 2.1)
         self.play(GrowArrow(arrow2), run_time=0.3)
+        self.wait(2)
         note2 = TexText("$(0,6,6)$ is a winning state", font_size=30)
         note2.move_to(LEFT * 3.2 + UP * 0.55)
         self.play(Write(note2))
@@ -206,25 +210,31 @@ class S08ProofSameNumbersSituation(Scene):
         new2 = Tex("n = 2k")
         new1.next_to(origin, RIGHT * 1.5 + UP * 0.8, buff=LARGE_BUFF)
         new2.next_to(origin, RIGHT * 1.5 + DOWN * 0.8, buff=LARGE_BUFF)
+        self.wait(3)
         self.play(Write(origin))
         arrow1 = Arrow(RIGHT * 0.8, RIGHT * 2 + UP)
         arrow2 = Arrow(RIGHT * 0.8, RIGHT * 2 + DOWN)
+        self.wait(3)
         self.play(Write(new1), GrowArrow(arrow1))
+        self.wait(2)
         self.play(Write(new2), GrowArrow(arrow2))
-        self.wait()
-        self.play(*(FadeOut(x) for x in [origin, new1, arrow1, new2, arrow2]))
+        self.wait(2)
+        cross = Cross(new1)
+        self.play(ShowCreation(cross))
+        self.wait(3)
+        self.play(*(FadeOut(x) for x in [origin, new1, arrow1, new2, arrow2, cross]))
         l = Tex("(0,0,n)\\to(0,\\dfrac 12n,\\dfrac 12n)")
         r = Tex("\\Leftrightarrow(0,0,\\dfrac 12n)")
         group = VGroup(l, r)
         group.arrange(RIGHT, buff=SMALL_BUFF)
         self.play(Write(l))
-        self.wait()
+        self.wait(3)
         self.play(Write(r))
-        self.wait()
-        d = Tex("\\left(0,0,2^{2p}\\cdot(2k+1)\\right)\\to\\left(0,0,2^p\\cdot(2k+1)\\right)", color=YELLOW)
+        self.wait(3)
+        d = Tex("\\left(0,0,2^p\\cdot(2k+1)\\right)\\to\\left(0,0,2^{p-1}\\cdot(2k+1)\\right)", color=YELLOW)
         d.next_to(group, DOWN, buff=MED_LARGE_BUFF)
         self.play(Write(d))
-        self.wait()
+        self.wait(3)
 
 class S09ProofDifferentNumbersSituation(Scene):
     def construct(self):
@@ -342,3 +352,76 @@ class S12InclusionExclusion(Scene):
         self.wait()
         self.play(Write(answer))
         self.wait()
+
+class S13SolveProblemByTrie(Scene):
+    def construct(self):
+        columns = VGroup(
+            Tex("|a_i-a_j|=2^k(2t+1)"),
+            Tex("\Leftrightarrow"),
+            Tex("""\\begin{cases}
+                x_0=y_0 \\\\
+                x_1=y_1 \\\\
+                \\cdots \\\\
+                x_{k-1}=y_{k-1} \\\\
+                x_k+y_k=1
+            \\end{cases}"""),
+        )
+        columns.arrange(RIGHT, buff=MED_LARGE_BUFF)
+        binary1 = Tex("a_i = (x_tx_{t-1}\\cdots x_1x_0)_2")
+        binary2 = Tex("a_j = (y_ty_{t-1}\\cdots y_1y_0)_2")
+        lines = VGroup(columns, binary1, binary2)
+        lines.arrange(DOWN, buff=MED_LARGE_BUFF)
+        condition = Tex("\\forall k\\neq 0\\text{ is even,}", font_size=45)
+        condition.next_to(columns[0], UP, buff=MED_SMALL_BUFF)
+        self.wait()
+        self.play(Write(columns[0]))
+        self.wait()
+        self.play(Write(condition))
+        self.wait(3)
+        self.play(Write(binary1))
+        self.wait()
+        self.play(Write(binary2))
+        self.wait(5)
+        self.play(FadeIn(columns[1]), Write(columns[2]))
+        self.wait(3)
+        self.play(FadeOut(columns), FadeOut(binary1), FadeOut(binary2), FadeOut(condition))
+        dots = [*(
+            Dot(RIGHT * (i - 3))
+            for i in range(0, 7)
+        )]
+        dots2 = [*(
+            Dot(RIGHT * (i + 1) + UP)
+            for i in range(0, 3)
+        )]
+        segments = [*(
+            Line(RIGHT * (i - 3), RIGHT * (i - 2))
+            for i in range(0, 6)
+        )]
+        segments2 = [
+            Line(RIGHT * 0, RIGHT + UP),
+            *(
+                Line(RIGHT * (i + 1) + UP, RIGHT * (i + 2) + UP)
+                for i in range(0, 2)
+            ),
+        ]
+        tag1 = Tex("a_i")
+        tag2 = Tex("a_j")
+        tag1.next_to(dots[6], RIGHT, buff=MED_SMALL_BUFF)
+        tag2.next_to(dots2[2], RIGHT, buff=MED_SMALL_BUFF)
+        self.play(ShowCreation(dots[0]))
+        for i in range(0, 6):
+            self.play(ShowCreation(segments[i]), ShowCreation(dots[i + 1]), run_time=0.3)
+        self.play(Write(tag1))
+        self.wait()
+        for i in range(0, 3):
+            self.play(ShowCreation(segments2[i]), ShowCreation(dots2[i]), run_time=0.3)
+        self.play(Write(tag2))
+        self.wait(2)
+        self.play(ShowCreation(SurroundingRectangle(dots[3])))
+        self.wait(3)
+
+class S14Summary(Scene):
+    def construct(self):
+        self.wait()
+        self.play(Write(Tex("\\Theta(n\\log v)")))
+        self.wait(3)
