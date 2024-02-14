@@ -425,3 +425,32 @@ class S14Summary(Scene):
         self.wait()
         self.play(Write(Tex("\\Theta(n\\log v)")))
         self.wait(3)
+
+class Cover(Scene):
+    def construct(self):
+        n = 25
+        rows = VGroup(*(
+            VGroup(*(
+                Square(0.3, stroke_width=1.5, fill_color=GREEN if isWinStatus(i, j) else RED, fill_opacity=1.0) if i <= j else Square(0.3, stroke_width=0)
+                for j in range(0, n + 1)
+            ))
+            for i in range(0, n + 1)
+        ))
+        for row in rows:
+            row.arrange(RIGHT, buff=0)
+        rows.arrange(DOWN, buff=0)
+        for i in range(0, n + 1):
+            self.add(*(
+                rows[i][j]
+                for j in range(i, n + 1)
+            ))
+        arrow1 = Arrow(LEFT * 5 + UP * 2.5, LEFT * 3.6 + UP * 3.9)
+        self.add(arrow1)
+        note1 = TexText("$(0,0,0)$ is not a winning state", font_size=30)
+        note1.move_to(LEFT * 5 + UP * 2.35)
+        self.add(note1)
+        arrow2 = Arrow(LEFT * 3.2 + UP * 0.7, LEFT * 1.8 + UP * 2.1)
+        self.add(arrow2)
+        note2 = TexText("$(0,6,6)$ is a winning state", font_size=30)
+        note2.move_to(LEFT * 3.2 + UP * 0.55)
+        self.add(note2)
