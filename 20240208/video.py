@@ -204,7 +204,7 @@ class S07GuessConclusions(Scene):
 
 class S08ProofSameNumbersSituation(Scene):
     def construct(self):
-        origin = Tex("(0,0,n) \\to (n,k,n-k)")
+        origin = Tex("(0,0,n) \\to (0,k,n-k)")
         origin.move_to(LEFT * 2)
         new1 = Tex("k < n-k")
         new2 = Tex("n = 2k")

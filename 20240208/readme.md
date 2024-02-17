@@ -7,3 +7,5 @@ CodeForces Gym 题目（104639F）链接：https://codeforces.com/gym/104639/pro
 勘误：
 
 00:23 处朗读错误，应为“设更改后的值为 ai' 和 aj'”，文字显示无误。
+
+03:13 处应变为 (0,k,n-k)，文字朗读均有错误。
